@@ -1,0 +1,31 @@
+CREATE PROCEDURE UpdateGoal
+    @goalID INT,           
+    @goalName VARCHAR(50), 
+    @goalAmount int
+	--@result INT OUTPUT
+
+AS
+BEGIN
+    BEGIN TRY
+        -- Update the goal with the new name and amount
+        UPDATE Goals
+        SET 
+            GoalName = @goalName,
+            GoalAmount = @goalAmount
+        WHERE 
+            GoalID = @goalID;
+
+        -- Check if any rows were updated
+        IF @@ROWCOUNT = 0
+        BEGIN
+            -- If no rows were affected, the goalID might not exist
+            RETURN -1; -- Indicate that the update failed (e.g., goal not found)
+        END
+
+        RETURN 1; -- Indicate success
+    END TRY
+    BEGIN CATCH
+        -- Handle any unexpected errors
+        RETURN -99; -- Indicate a general failure
+    END CATCH
+END;
